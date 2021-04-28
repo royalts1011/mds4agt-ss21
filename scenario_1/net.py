@@ -39,13 +39,13 @@ class SimpleNet1D(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.conv1 = nn.Conv1d(12, 16, kernel_size=3, stride=stride, padding=0, bias=True)
-        self.conv2 = nn.Conv1d(16, 32, kernel_size=3, stride=stride, padding=0, bias=True)
-        self.conv3 = nn.Conv1d(32, 64, kernel_size=3, stride=stride, padding=0, bias=True)
-        self.conv4 = nn.Conv1d(64, 128, kernel_size=3, stride=stride, padding=0, bias=True)
-        self.conv5 = nn.Conv1d(128, 256, kernel_size=3, stride=stride, padding=0,bias=True)
+        self.conv1 = nn.Conv1d(21, 32, kernel_size=2, stride=stride, padding=0, bias=True)
+        self.conv2 = nn.Conv1d(32, 64, kernel_size=2, stride=stride, padding=0, bias=True)
+        self.conv3 = nn.Conv1d(64, 128, kernel_size=2, stride=stride, padding=0, bias=True)
+        self.conv4 = nn.Conv1d(128, 256, kernel_size=2, stride=stride, padding=0, bias=True)
+        self.conv5 = nn.Conv1d(256, 512, kernel_size=2, stride=stride, padding=0,bias=True)
         #self.conv6 = nn.Conv1d(256, 512, kernel_size=kern_sz, stride=stride, padding=0, bias=True)
-        self.linear = nn.Linear(256 * 24, 55)
+        self.linear = nn.Linear(512 * 25, 55)
 
     def forward(self, x):
         x = f.relu(self.conv1(x))

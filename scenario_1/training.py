@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 # Inits:
 
-lr = 0.001
+lr = 0.0001
 num_epochs = 50
 
 model = SimpleNet1D()
@@ -54,7 +54,7 @@ for data, label in eval_loader:
         correct_pred += 1
 
 print('Number of correct predictions: ' + str(correct_pred))
-print('Number of Predictions:' + str(num_pred))
+print('Number of Predictions: ' + str(num_pred))
 print('Portion: ' + str(correct_pred/num_pred))
 
 
