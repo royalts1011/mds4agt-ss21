@@ -2,6 +2,7 @@ import torch
 from torch.utils.data import Dataset
 
 class Activity_Dataset(Dataset):
+
     def __init__(self, data, target, transform=None):
         self.data = torch.from_numpy(data).float()
         self.target = torch.from_numpy(target).long()

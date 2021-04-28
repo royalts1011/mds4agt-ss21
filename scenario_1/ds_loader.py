@@ -61,5 +61,7 @@ def get_dataloader(is_train=True):
 
 
 
-get_dataset(save=True,folder=Config.DATABASE_FOLDER_TRAIN)
+dataset = get_dataset(save=True,folder=Config.DATABASE_FOLDER_TRAIN)
+print(dataset.shape)
+
 #get_dataloader(is_train=False)
