@@ -6,12 +6,14 @@ from utils import get_simple_data_loader, get_simple_eval_loader
 import matplotlib.pyplot as plt
 
 
-# Inits:
-
-lr = 0.0001
+""" 
+Inits:
+"""
+lr = 0.001
 num_epochs = 50
 
-model = SimpleNet1D()
+# change the model here. Also change view in loading methods
+model = SimpleNet()
 optimizer = optim.Adam(model.parameters(), lr=lr)
 criterion = nn.CrossEntropyLoss()
 
@@ -20,7 +22,9 @@ train_loader = get_simple_data_loader()
 loss_ls_train = []
 model.train()
 
-
+"""
+Training process:
+"""
 for epoch in range(num_epochs):
     for data, labels in train_loader:
 
@@ -39,6 +43,9 @@ for epoch in range(num_epochs):
 #plt.plot(loss_ls_train)
 #plt.show()
 
+"""
+Evaluation process: At the moment simply counting the correct predictions
+"""
 model.eval()
 
 eval_loader = get_simple_eval_loader()
@@ -48,7 +55,6 @@ num_pred = 0
 for data, label in eval_loader:
     pred = torch.argmax(model(data))
     num_pred += 1
-
 
     if pred.data.item() == label.data.item():
         correct_pred += 1
