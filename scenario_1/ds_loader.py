@@ -27,14 +27,13 @@ def get_dataset(save=False, folder=Config.DATABASE_FOLDER_TRAIN):
             data_list.append(resized_data)
             
     stacked_data = np.stack(data_list, axis = -1)
-    print("test")
     
     if save:
         np.save(os.path.join(folder,"stacked_data.npy"),stacked_data)
 
     return stacked_data
 
-def get_dataloader(is_train=True):
+def get_dataloader(is_train=True, batch_size=32, num_workers=0):
     if is_train:
         folder = Config.DATABASE_FOLDER_TRAIN
     else:
@@ -50,16 +49,8 @@ def get_dataloader(is_train=True):
     
     ds_loader = DataLoader(
         dataset,
-        batch_size=10,
+        batch_size=batch_size,
         shuffle=True,
-        num_workers=2,
-        pin_memory=torch.cuda.is_available()
+        num_workers=num_workers
     )
-
-    print("test")
     return ds_loader
-
-
-
-get_dataset(save=True,folder=Config.DATABASE_FOLDER_TRAIN)
-#get_dataloader(is_train=False)
