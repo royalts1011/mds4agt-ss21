@@ -4,16 +4,22 @@ from net import SimpleNet, SimpleNet1D
 from torch import nn
 from utils import get_simple_data_loader, get_simple_eval_loader
 import matplotlib.pyplot as plt
-
+from torchvision.models.mobilenet import mobilenet_v2
 
 """ 
 Inits:
 """
 lr = 0.001
-num_epochs = 50
+num_epochs = 20
 
 # change the model here. Also change view in loading methods
-model = SimpleNet()
+#model = SimpleNet()
+model = mobilenet_v2(pretrained=True)
+
+model.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
+model.classifier[1] = nn.Linear(in_features=model.classifier[1].in_features, out_features=55)
+
+
 optimizer = optim.Adam(model.parameters(), lr=lr)
 criterion = nn.CrossEntropyLoss()
 
@@ -39,6 +45,8 @@ for epoch in range(num_epochs):
         loss_ls_train.append(loss.data.item())
 
     print('===> Epoch: {} loss: {:.4f}'.format(epoch, loss.data.item()))
+
+torch.save(model, '../trained_model_.pt')
 
 #plt.plot(loss_ls_train)
 #plt.show()
