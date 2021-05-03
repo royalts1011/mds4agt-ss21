@@ -76,4 +76,7 @@ print('Number of correct predictions: ' + str(correct_pred))
 print('Number of Predictions: ' + str(num_pred))
 print('Portion: ' + str(correct_pred/num_pred))
 
+if not os.path.exists('../../models'):
+    os.mkdir('../../models')
 
+torch.save(model, '../../models/trained_model_' + str(round((correct_pred/num_pred) * 100)) + '%.pt')
