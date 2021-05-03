@@ -5,12 +5,14 @@ from torch import nn
 from utils import get_simple_data_loader, get_simple_eval_loader
 import matplotlib.pyplot as plt
 from torchvision.models.mobilenet import mobilenet_v2
+import os
 
 """ 
 Inits:
 """
 lr = 0.001
 num_epochs = 20
+device = 'cuda'
 
 # change the model here. Also change view in loading methods
 #model = SimpleNet()
@@ -18,12 +20,12 @@ model = mobilenet_v2(pretrained=True)
 
 model.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
 model.classifier[1] = nn.Linear(in_features=model.classifier[1].in_features, out_features=55)
-
+model.to(device)
 
 optimizer = optim.Adam(model.parameters(), lr=lr)
 criterion = nn.CrossEntropyLoss()
 
-train_loader = get_simple_data_loader()
+train_loader = get_simple_data_loader(cuda=torch.cuda.is_available())
 
 loss_ls_train = []
 model.train()
@@ -46,7 +48,10 @@ for epoch in range(num_epochs):
 
     print('===> Epoch: {} loss: {:.4f}'.format(epoch, loss.data.item()))
 
-torch.save(model, '../trained_model_.pt')
+if not os.path.exists('../../models'):
+    os.mkdir('../../models')
+
+torch.save(model, '../../models/trained_model_.pt')
 
 #plt.plot(loss_ls_train)
 #plt.show()
@@ -56,7 +61,7 @@ Evaluation process: At the moment simply counting the correct predictions
 """
 model.eval()
 
-eval_loader = get_simple_eval_loader()
+eval_loader = get_simple_eval_loader(cuda=torch.cuda.is_available())
 correct_pred = 0
 num_pred = 0
 
