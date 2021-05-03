@@ -76,6 +76,10 @@ print('Number of correct predictions: ' + str(correct_pred))
 print('Number of Predictions: ' + str(num_pred))
 print('Portion: ' + str(correct_pred/num_pred))
 
+
+"""
+Saving the model:
+"""
 if not os.path.exists('../../models'):
     os.mkdir('../../models')
 
