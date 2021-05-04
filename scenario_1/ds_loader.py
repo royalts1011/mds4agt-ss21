@@ -4,7 +4,7 @@ from pathlib import Path
 import os
 from ds import Activity_Dataset
 from torch.utils.data import Dataset, DataLoader
-import torch
+
 
 class Config():
     DATABASE_FOLDER_TRAIN = str(Path("../../dataset/training/"))
@@ -13,7 +13,7 @@ class Config():
 
 def get_dataset(save=False, folder=Config.DATABASE_FOLDER_TRAIN):
     data_list = []
-    for data in os.listdir(folder):
+    for data in sorted(os.listdir(folder)):
         if data.endswith("Labels.npy"):
             continue
         if data.endswith("stacked_data.npy"):
@@ -39,7 +39,7 @@ def get_dataloader(is_train=True, batch_size=32, num_workers=0):
     else:
         folder = Config.DATABASE_FOLDER_TEST
 
-    for data in os.listdir(folder):
+    for data in sorted(os.listdir(folder)):
         if data.endswith("Labels.npy"):
             labels = np.load(os.path.join(folder,data), allow_pickle=True)
         if data.endswith("stacked_data.npy"):
@@ -54,3 +54,5 @@ def get_dataloader(is_train=True, batch_size=32, num_workers=0):
         num_workers=num_workers
     )
     return ds_loader
+
+get_dataset(save=True, folder=Config.DATABASE_FOLDER_TEST)
