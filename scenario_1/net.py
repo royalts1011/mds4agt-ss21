@@ -29,7 +29,7 @@ class SimpleNet(nn.Module):
         x = f.relu(self.conv5(x))
         #x = f.relu(self.conv6(x))
         #print(x.shape)
-        x = f.softmax(self.linear(x.view(x.size(0), -1)))
+        x = self.linear(x.view(x.size(0), -1))
 
         return x
 
@@ -55,6 +55,6 @@ class SimpleNet1D(nn.Module):
         #x = f.relu(self.conv5(x))
         #x = f.relu(self.conv6(x))
         #print(x.shape)
-        x = f.softmax(self.linear(x.view(x.size(0), -1)))
+        x = self.linear(x.view(x.size(0), -1))
 
         return x
