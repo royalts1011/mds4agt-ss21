@@ -47,7 +47,7 @@ def get_simple_data_loader(cuda=False):
 
     #print(data_set_train[0])
 
-    data_loader_train = DataLoader(data_set_train, batch_size=128, shuffle=True)
+    data_loader_train = DataLoader(data_set_train, batch_size=32, shuffle=True)
 
     return data_loader_train
 
@@ -82,7 +82,7 @@ def get_simple_eval_loader(cuda=False):
     change between 2D and 1D
     """
     eval_tens = eval_tens.view(-1, 1, 27, 800)
-    # eval_tens = eval_tens.view(-1, 27, 800)
+    #eval_tens = eval_tens.view(-1, 27, 800)
 
     # print(train_tens.shape)
 

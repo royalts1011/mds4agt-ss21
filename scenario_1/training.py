@@ -6,18 +6,21 @@ from torch import nn
 from utils import get_simple_data_loader, get_simple_eval_loader
 import matplotlib.pyplot as plt
 from torchvision.models.mobilenet import mobilenet_v2
+from convLSTMNet import convLSTMNET
 import os
 
 """ 
 Inits:
 """
 lr = 0.001
-num_epochs = 20
+num_epochs = 50
 device = 'cuda'
 
 # change the model here. Also change view in loading methods
 model = SimpleNet()
-# model = mobilenet_v2(pretrained=True)
+#model = SimpleNet1D()
+#model = mobilenet_v2(pretrained=True)
+#model = convLSTMNET()
 
 # model.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
 # model.classifier[1] = nn.Linear(in_features=model.classifier[1].in_features, out_features=55)
@@ -47,7 +50,7 @@ for epoch in range(num_epochs):
 
         loss_ls_train.append(loss.data.item())
 
-    print('===> Epoch: {} loss: {:.4f}'.format(epoch, loss.data.item()))
+    print('===> Epoch: {} loss: {:.5f}'.format(epoch, loss.data.item()))
 
 if not os.path.exists('../../models'):
     os.mkdir('../../models')
