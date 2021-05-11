@@ -70,7 +70,7 @@ correct_pred = 0
 num_pred = 0
 
 for data, label in eval_loader:
-    pred = torch.argmax(f.softmax(model(data)))
+    pred = torch.argmax(f.softmax(model(data), dim=1))
     num_pred += 1
 
     if pred.data.item() == label.data.item():

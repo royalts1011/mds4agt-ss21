@@ -14,29 +14,21 @@ class convLSTMNET(nn.Module):
 
         self.convblock1 = nn.Sequential(
             nn.Conv2d(1, 4, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
-            #nn.Dropout(0.2),
-            #nn.BatchNorm2d(4),
             nn.ReLU()
         )
 
         self.convblock2 = nn.Sequential(
             nn.Conv2d(4, 8, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
-            #nn.Dropout(0.2),
-            #nn.BatchNorm2d(8),
             nn.ReLU()
         )
 
         self.convblock3 = nn.Sequential(
             nn.Conv2d(8, 16, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
-            #nn.Dropout(0.2),
-            #nn.BatchNorm2d(16),
             nn.ReLU()
         )
 
         self.convblock4 = nn.Sequential(
             nn.Conv2d(16, 32, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
-            #nn.Dropout(0.2),
-            #nn.BatchNorm2d(64),
             nn.ReLU()
         )
 
