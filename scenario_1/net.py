@@ -3,8 +3,8 @@ from torch import nn
 import torch.nn.functional as f
 
 ### Variables ###
-kern_sz = (3, 3)
-stride = (1, 2)
+kern_sz = 3
+stride = 1
 padding = 0
 
 stride1D = 1
@@ -14,49 +14,31 @@ class SimpleNet(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.convblock1 = nn.Sequential(
-            nn.Conv2d(1, 4, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
+        self.ciao = nn.Sequential(
+            nn.Conv1d(3, 4, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             #nn.Dropout(0.2),
             #nn.BatchNorm2d(4),
-            nn.ReLU()
-        )
-
-        self.convblock2 = nn.Sequential(
-            nn.Conv2d(4, 8, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
+            nn.ReLU(),
+            nn.Conv1d(4, 8, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             #nn.Dropout(0.2),
             #nn.BatchNorm2d(8),
-            nn.ReLU()
-        )
-
-        self.convblock3 = nn.Sequential(
-            nn.Conv2d(8, 16, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
+            nn.ReLU(),
+            nn.Conv1d(8, 16, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             #nn.Dropout(0.2),
             #nn.BatchNorm2d(16),
-            nn.ReLU()
-        )
-
-        self.convblock4 = nn.Sequential(
-            nn.Conv2d(16, 32, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
+            nn.ReLU(),
+            nn.Conv1d(16, 32, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             #nn.Dropout(0.2),
             #nn.BatchNorm2d(32),
-            nn.ReLU()
-        )
-
-        self.convblock5 = nn.Sequential(
-            nn.Conv2d(32, 64, kernel_size=kern_sz, stride=stride, padding=padding,bias=True),
+            nn.ReLU(),
+            nn.Conv1d(32, 64, kernel_size=kern_sz, stride=stride, padding=padding,bias=True),
             #nn.Dropout(0.2),
             #nn.BatchNorm2d(64),
-            nn.ReLU()
-        )
-
-        self.convblock6 = nn.Sequential(
+            nn.ReLU(),
             nn.Conv1d(64, 128, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             #nn.Dropout(0.2),
             #nn.BatchNorm2d(128),
-            nn.ReLU()
-        )
-
-        self.convblock7 = nn.Sequential(
+            nn.ReLU(),
             nn.Conv1d(128, 256, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             #nn.Dropout(0.2),
             #nn.BatchNorm2d(256),
@@ -65,15 +47,19 @@ class SimpleNet(nn.Module):
 
         self.linear = nn.Linear(256 * 13 * 5, 55)
 
-    def forward(self, x):
-        x = self.convblock1(x)
-        x = self.convblock2(x)
-        x = self.convblock3(x)
-        x = self.convblock4(x)
-        x = self.convblock5(x)
-        x = self.convblock6(x)
-        x = self.convblock7(x)
-        #print(x.shape)
+    def forward(self, x1, x2, x3, x4, x5, x6, x7, x8, x9):
+        x1 = self.ciao(x1)
+        x2 = self.ciao(x2)
+        x3 = self.ciao(x3)
+        x4 = self.ciao(x4)
+        x5 = self.ciao(x5)
+        x6 = self.ciao(x6)
+        x7 = self.ciao(x7)
+        x8 = self.ciao(x8)
+        x9 = self.ciao(x9)
+
+        x = torch.cat(x1,x2,x3,x4,x5,x6,x7,x8,x9, dim=1)
+        #print(x.shape8)
         x = self.linear(x.view(x.size(0), -1))
 
         return x

@@ -13,8 +13,8 @@ import os
 Inits:
 """
 lr = 0.001
-num_epochs = 50
-device = 'cuda'
+num_epochs = 5
+device = 'cpu'
 
 # change the model here. Also change view in loading methods
 model = SimpleNet()
@@ -38,17 +38,24 @@ model.train()
 Training process:
 """
 for epoch in range(num_epochs):
-    for data, labels in train_loader:
 
-        optimizer.zero_grad()
+    optimizer.zero_grad()
+    prediction = model( train_loader[0].dataset.tensors[0],
+                        train_loader[1].dataset.tensors[0],
+                        train_loader[2].dataset.tensors[0],
+                        train_loader[3].dataset.tensors[0],
+                        train_loader[4].dataset.tensors[0],
+                        train_loader[5].dataset.tensors[0],
+                        train_loader[6].dataset.tensors[0],
+                        train_loader[7].dataset.tensors[0],
+                        train_loader[8].dataset.tensors[0])
 
-        prediction = model(data)
-
+    for _, labels in train_loader[0]:
         loss = criterion(prediction, labels)
-        loss.backward()
-        optimizer.step()
+    loss.backward()
+    optimizer.step()
 
-        loss_ls_train.append(loss.data.item())
+    loss_ls_train.append(loss.data.item())
 
     print('===> Epoch: {} loss: {:.5f}'.format(epoch, loss.data.item()))
 
