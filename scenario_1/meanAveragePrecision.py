@@ -28,6 +28,7 @@ def computeMeanAveragePrecision(labels,softmaxEstimations):
         labelArray = np.asarray(labels)
         labelsTmp = list(labelArray[permutation])
 
+
         # Convert the labels to binary (1-vs-all)
         for idx in range(len(labelsTmp)):
             if labelsTmp[idx] == classIdx:
