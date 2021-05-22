@@ -14,7 +14,7 @@ import numpy as np
 Inits:
 """
 lr = 0.001
-num_epochs = 50
+num_epochs = 1
 device = 'cpu'
 if torch.cuda.is_available():
     device = 'cuda'
@@ -50,7 +50,6 @@ for epoch in range(num_epochs):
     print('===> Epoch: {} loss: {:.5f}'.format(epoch, loss.data.item()))
 
 # Uncomment if you want to see the training process after Training
-
 # plt.plot(loss_ls_train)
 # plt.show()
 
@@ -81,13 +80,10 @@ for data, label in eval_loader:
     estimation_ls.append(estimation.cpu().detach().numpy())
 
 
-    # map, ap = computeMeanAveragePrecision(labels=label.cpu().detach().numpy(), softmaxEstimations=estimation.cpu().detach().numpy())
-    # map_sum += map
-
 print('Number of correct predictions: ' + str(correct_pred))
 print('Number of Predictions: ' + str(num_pred))
 print('Accuracy: ' + str(correct_pred/num_pred))
-print('F1-Score: ' + str(f1_score(y_true=label_ls, y_pred=pred_ls, average='micro')))
+print('F1-Score: ' + str(f1_score(y_true=label_ls, y_pred=pred_ls, average='macro')))
 
 map, ap = computeMeanAveragePrecision(labels=label_ls, softmaxEstimations=np.array(estimation_ls).squeeze())
 
