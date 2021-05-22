@@ -1,29 +1,24 @@
 import torch
 from torch import optim
-from net import SimpleNet, SimpleNet1D
+from net import SimpleNet
 import torch.nn.functional as f
 from torch import nn
 from utils import get_simple_data_loader, get_simple_eval_loader
 import matplotlib.pyplot as plt
-from torchvision.models.mobilenet import mobilenet_v2
-from convLSTMNet import convLSTMNET
 import os
+from meanAveragePrecision import computeMeanAveragePrecision
 
 """ 
 Inits:
 """
 lr = 0.001
-num_epochs = 50
-device = 'cuda'
+num_epochs = 1  # 50
+device = 'cpu'
+if torch.cuda.is_available():
+    device = 'cuda'
 
-# change the model here. Also change view in loading methods
+
 model = SimpleNet()
-#model = SimpleNet1D()
-#model = mobilenet_v2(pretrained=True)
-#model = convLSTMNET()
-
-# model.features[0][0] = nn.Conv2d(1, 32, kernel_size=(3, 3), stride=(2, 2), padding=(1, 1), bias=False)
-# model.classifier[1] = nn.Linear(in_features=model.classifier[1].in_features, out_features=55)
 model.to(device)
 
 optimizer = optim.Adam(model.parameters(), lr=lr)
@@ -52,39 +47,41 @@ for epoch in range(num_epochs):
 
     print('===> Epoch: {} loss: {:.5f}'.format(epoch, loss.data.item()))
 
-if not os.path.exists('../../models'):
-    os.mkdir('../../models')
+# Uncomment if you want to see the training process after Training
 
-torch.save(model, '../../models/trained_model_.pt')
-
-#plt.plot(loss_ls_train)
-#plt.show()
+# plt.plot(loss_ls_train)
+# plt.show()
 
 """
-Evaluation process: At the moment simply counting the correct predictions
+Evaluation process:
 """
 model.eval()
 
 eval_loader = get_simple_eval_loader(cuda=torch.cuda.is_available())
 correct_pred = 0
 num_pred = 0
+map_sum = 0
 
 for data, label in eval_loader:
-    pred = torch.argmax(f.softmax(model(data), dim=1))
+    estimation = f.softmax(model(data))
+    pred = torch.argmax(estimation)
     num_pred += 1
 
     if pred.data.item() == label.data.item():
         correct_pred += 1
 
+    map, ap = computeMeanAveragePrecision(label.detach().numpy(), estimation.detach().numpy())
+    map_sum += map
+    print(num_pred)
+
 print('Number of correct predictions: ' + str(correct_pred))
 print('Number of Predictions: ' + str(num_pred))
 print('Portion: ' + str(correct_pred/num_pred))
+print('MAP: ' + str(map_sum/num_pred))
 
 
-"""
-Saving the model:
-"""
-if not os.path.exists('../../models'):
-    os.mkdir('../../models')
+# Uncomment the following lines if you want the model to be saved
 
-torch.save(model, '../../models/trained_model_' + str(round((correct_pred/num_pred) * 100)) + '%.pt')
+# if not os.path.exists('../../models'):
+#     os.mkdir('../../models')
+# torch.save(model, '../../models/trained_model_' + str(round((correct_pred/num_pred) * 100)) + '%.pt')
