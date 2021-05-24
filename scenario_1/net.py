@@ -3,7 +3,7 @@ from torch import nn
 import torch.nn.functional as f
 
 ### Variables ###
-kern_sz = (3, 3)
+kern_sz = (3, 5)
 stride = (1, 2)
 padding = 0
 
@@ -52,7 +52,8 @@ class SimpleNet(nn.Module):
             nn.ReLU()
         )
 
-        self.linear = nn.Linear(256 * 13 * 5, 55)
+        # self.linear = nn.Linear(256 * 13 * 5, 55)
+        self.linear = nn.Linear(256 * 13 * 3, 55)
 
     def forward(self, x):
         """
@@ -67,6 +68,7 @@ class SimpleNet(nn.Module):
         x = self.convblock5(x)
         x = self.convblock6(x)
         x = self.convblock7(x)
+        # print(x.shape)
         x = self.linear(x.view(x.size(0), -1))
 
         return x

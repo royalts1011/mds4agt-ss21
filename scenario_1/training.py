@@ -13,15 +13,15 @@ import numpy as np
 """
 Flags and variables:
 """
-load_model = True
-save_model = False
+load_model = False
+save_model = True
 
-path_to_model = '..' + os.sep + '..' + os.sep + 'models' + os.sep + 'trained_model_50%.pt'
+path_to_model = '..' + os.sep + '..' + os.sep + 'models' + os.sep + 'trained_model_50%_.pt'
 """ 
 Inits:
 """
 lr = 0.0001
-num_epochs = 165
+num_epochs = 145
 device = 'cpu'
 if torch.cuda.is_available():
     device = 'cuda'
