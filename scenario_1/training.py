@@ -14,9 +14,9 @@ import numpy as np
 Flags and variables:
 """
 load_model = False
-save_model = True
+save_model = False
 
-path_to_model = '..' + os.sep + '..' + os.sep + 'models' + os.sep + 'trained_model_50%_.pt'
+path_to_model = '..' + os.sep + '..' + os.sep + 'models' + os.sep + 'trained_model_51%_.pt'
 """ 
 Inits:
 """
@@ -95,7 +95,7 @@ for data, label in eval_loader:
 print('Number of correct predictions: ' + str(correct_pred))
 print('Number of Predictions: ' + str(num_pred))
 print('Accuracy: ' + str(correct_pred/num_pred))
-print('F1-Score: ' + str(f1_score(y_true=label_ls, y_pred=pred_ls, average='weighted')))
+print('F1-Score: ' + str(f1_score(y_true=label_ls, y_pred=pred_ls, average='micro')))
 
 map, ap = computeMeanAveragePrecision(labels=label_ls, softmaxEstimations=np.array(estimation_ls).squeeze())
 

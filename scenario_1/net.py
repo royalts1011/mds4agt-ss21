@@ -68,7 +68,6 @@ class SimpleNet(nn.Module):
         x = self.convblock5(x)
         x = self.convblock6(x)
         x = self.convblock7(x)
-        # print(x.shape)
         x = self.linear(x.view(x.size(0), -1))
 
         return x
