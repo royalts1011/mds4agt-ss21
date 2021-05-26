@@ -1,5 +1,6 @@
 from os.path import join
 import pandas as pd
+import math
 
 def csv_to_dataframe(folder):
     """
@@ -19,6 +20,15 @@ def csv_to_array(folder):
     """
     acc, gyro = csv_to_dataframe(folder)
     return acc.to_numpy(), gyro.to_numpy()
+
+def get_sample_freq(data):
+    """
+         :return: rounded sample frequency in Hz
+    """
+    time = data[len(data)-2][0]
+    freq = len(data) / time # if needed this is the original freq
+
+    return int(math.ceil(freq / 100.0)) * 100
 
 track_dir = 'dataset/track1'
 
