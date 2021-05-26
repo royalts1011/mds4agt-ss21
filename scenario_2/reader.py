@@ -24,6 +24,13 @@ def numpy_csv_to_array(folder):
     return accelerometer, gyroscope
 
 
+def csv_to_array(folder):
+    """
+        This function can be used from externa to translate a CSV
+        into a numpy array.
+    """
+    acc, gyro = csv_to_dataframe(folder)
+    return acc.to_numpy(), gyro.to_numpy()
 
 track_dir = 'dataset/track1'
 
