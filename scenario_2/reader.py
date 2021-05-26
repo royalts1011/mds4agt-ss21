@@ -9,8 +9,8 @@ def csv_to_dataframe(folder):
         Return DataFrame format 
     """
     # No skipped rows as the first row is the heder of the DataFrame
-    accelerometer = pd.read_csv(join(folder,'Accelerometer.csv'),skiprows=0, skip_blank_lines=True)
-    gyroscope = pd.read_csv(join(folder,'Gyroscope.csv'), skiprows=0, skip_blank_lines=True)
+    accelerometer = pd.read_csv(join(folder,'Accelerometer.csv'))
+    gyroscope = pd.read_csv(join(folder,'Gyroscope.csv'))
     return accelerometer, gyroscope
 
 
