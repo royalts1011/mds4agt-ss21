@@ -51,18 +51,21 @@ class AngleComputation:
         R = self.get_R(g_b_dash)
         R_inv = R.transpose()
 
-        theta_dot = R_inv.dot(omega)
+        theta_dot = R_inv.dot(omega)[2]
 
         return theta_dot
 
     def get_angle(self, omega, step_idxs, delta_t):
 
         angles = np.zeros([len(step_idxs)])
+        last_step_idx = 0
 
         for enum, step_idx in enumerate(step_idxs):
-
-            sum_theta_t = sum(self.get_theta_dot(self.g_b_dash_vec[step_idx], omega[step_idx, 1:]) * delta_t)
+            sum_theta_t = 0
+            for idx in range(last_step_idx, step_idx):
+                sum_theta_t += self.get_theta_dot(self.g_b_dash_vec[idx], omega[idx, 1:]) * delta_t
 
             angles[enum] = sum_theta_t
+            last_step_idx = step_idx
 
         return angles
