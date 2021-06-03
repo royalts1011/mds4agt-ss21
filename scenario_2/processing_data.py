@@ -15,9 +15,9 @@ def acc_lowpass_filter(acc_data, sample_freq):
     # sos: second-order sections (‘sos’) should be used for general-purpose filtering.
     # fs: sampling rate
     # btype: which kind of filter
-    # N: 2 Lowpass Filter of
+    # N: 2 Lowpass Filter-order --> high order step function, low order more smooth function
     # Wn: ?????
-    sos = signal.butter(N=4, Wn=3, btype='lowpass', analog=False, output='sos', fs=sample_freq)
+    sos = signal.butter(N=4, Wn=4, btype='lowpass', analog=False, output='sos', fs=sample_freq)
     prepro_acc = signal.sosfiltfilt(sos, acc_data, axis=0)
 
     return prepro_acc
