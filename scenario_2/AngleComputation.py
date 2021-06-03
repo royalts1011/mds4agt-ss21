@@ -48,12 +48,17 @@ class AngleComputation:
         return R
 
     def get_theta_dot(self, g_b_dash, omega):
+
         R = self.get_R(g_b_dash)
         R_inv = R.transpose()
 
-        theta_dot = R_inv.dot(omega)[2]
+        theta_dot_v = R_inv.dot(omega)
+
+
+        theta_dot = theta_dot_v[:][2]
 
         return theta_dot
+
 
     def get_angle(self, omega, step_idxs, delta_t):
 
@@ -63,9 +68,29 @@ class AngleComputation:
         for enum, step_idx in enumerate(step_idxs):
             sum_theta_t = 0
             for idx in range(last_step_idx, step_idx):
-                sum_theta_t += self.get_theta_dot(self.g_b_dash_vec[idx], omega[idx, 1:]) * delta_t
+                sum_theta_t += self.get_theta_dot(self.g_b_dash_vec[idx], omega[idx, 1:]) * delta_t[idx]
 
             angles[enum] = sum_theta_t
-            last_step_idx = step_idx
+           # last_step_idx = step_idx
+            print('Step: ' + str(enum) + ' finished')
+        return angles
+
+    """
+
+    def get_angle(self, omega, step_idxs, delta_t):
+
+        angles = np.zeros([len(step_idxs)])
+
+        theta_dot = self.get_theta_dot(self.g_b_dash_vec[:], omega[:, 1:])
+        inner = theta_dot * delta_t
+
+        for enum, step_idx in enumerate(step_idxs):
+
+            sum_theta_t = np.sum(inner[:step_idx])
+
+            angles[enum] = sum_theta_t
+
+            print('Step: ' + str(enum) + ' finished')
 
         return angles
+    """
