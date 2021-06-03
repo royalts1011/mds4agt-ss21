@@ -9,11 +9,9 @@ class AngleComputation:
 
     def get_init_g_b_dash(self, acc_data, len_init_time = 9, freq = 400):
 
-        # presumably smooth the data before averaging it...
-
-        g_x = np.mean(acc_data[:len_init_time * freq, 1])
-        g_y = np.mean(acc_data[:len_init_time * freq, 2])
-        g_z = np.mean(acc_data[:len_init_time * freq, 3])
+        g_x = np.mean(acc_data[:len_init_time * freq, 0])
+        g_y = np.mean(acc_data[:len_init_time * freq, 1])
+        g_z = np.mean(acc_data[:len_init_time * freq, 2])
 
         gb_dash = [g_x, g_y, g_z]
         return gb_dash
@@ -28,7 +26,7 @@ class AngleComputation:
         g_b_dash_up[:len_init_time * freq, :] = g_b_dash_init
 
         for i in range(len_init_time * freq, len(acc_data)):
-            g_b_dash_up[i] = mu * g_b_dash_up[i-1] + (1-mu) * acc_data[i, 1:]
+            g_b_dash_up[i] = mu * g_b_dash_up[i-1] + (1-mu) * acc_data[i, :]
 
         return g_b_dash_up
 
