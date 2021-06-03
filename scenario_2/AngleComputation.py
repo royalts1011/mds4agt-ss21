@@ -64,33 +64,13 @@ class AngleComputation:
 
         angles = np.zeros([len(step_idxs)])
         last_step_idx = 0
+        sum_theta_t = 0
 
         for enum, step_idx in enumerate(step_idxs):
-            sum_theta_t = 0
             for idx in range(last_step_idx, step_idx):
                 sum_theta_t += self.get_theta_dot(self.g_b_dash_vec[idx], omega[idx, 1:]) * delta_t[idx]
 
             angles[enum] = sum_theta_t
-           # last_step_idx = step_idx
-            print('Step: ' + str(enum) + ' finished')
-        return angles
-
-    """
-
-    def get_angle(self, omega, step_idxs, delta_t):
-
-        angles = np.zeros([len(step_idxs)])
-
-        theta_dot = self.get_theta_dot(self.g_b_dash_vec[:], omega[:, 1:])
-        inner = theta_dot * delta_t
-
-        for enum, step_idx in enumerate(step_idxs):
-
-            sum_theta_t = np.sum(inner[:step_idx])
-
-            angles[enum] = sum_theta_t
-
-            print('Step: ' + str(enum) + ' finished')
+            last_step_idx = step_idx
 
         return angles
-    """
