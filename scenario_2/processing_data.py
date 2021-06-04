@@ -8,6 +8,11 @@ from scipy import signal
 def acc_lowpass_filter(acc_data, sample_freq):
     """
     lowpass filter the acc data
+
+    track_1 ---> 2/1
+    track_2 ---> 3/1
+    track_3 ---> 2/6
+
     :param acc_data:  raw acceleration data
     :param sample_freq: sampling rate of the data
     :return: lowpass filtered acceleration data
@@ -17,7 +22,7 @@ def acc_lowpass_filter(acc_data, sample_freq):
     # btype: which kind of filter
     # N: 2 Lowpass Filter-order --> high order step function, low order more smooth function
     # Wn: ?????
-    sos = signal.butter(N=4, Wn=4, btype='lowpass', analog=False, output='sos', fs=sample_freq)
+    sos = signal.butter(N=2, Wn=1, btype='lowpass', analog=False, output='sos', fs=sample_freq)
     prepro_acc = signal.sosfiltfilt(sos, acc_data, axis=0)
 
     return prepro_acc
