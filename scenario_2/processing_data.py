@@ -53,3 +53,5 @@ def normalize_data(data):
     '''
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 
+def remove_time_dim(data, sample_freq):
+    return data[:,1:]
