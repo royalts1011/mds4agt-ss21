@@ -1,10 +1,8 @@
 import numpy as np
 from scipy.ndimage import zoom
-from pathlib import Path
 import os
 from ds import Activity_Dataset
 from torch.utils.data import Dataset, DataLoader
-import torch
 import random
 
 class Dataset_Handler:
