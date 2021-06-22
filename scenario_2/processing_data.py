@@ -8,6 +8,12 @@ from scipy import signal
 def acc_lowpass_filter(acc_data, sample_freq):
     """
     lowpass filter the acc data
+
+    track_1 ---> 2/1
+    track_2 ---> 3/1
+    track_3 ---> 2/6
+    track geb. 64 ---> 2/2
+
     :param acc_data:  raw acceleration data
     :param sample_freq: sampling rate of the data
     :return: lowpass filtered acceleration data
@@ -15,9 +21,9 @@ def acc_lowpass_filter(acc_data, sample_freq):
     # sos: second-order sections (‘sos’) should be used for general-purpose filtering.
     # fs: sampling rate
     # btype: which kind of filter
-    # N: 2 Lowpass Filter of
+    # N: 2 Lowpass Filter-order --> high order step function, low order more smooth function
     # Wn: ?????
-    sos = signal.butter(N=4, Wn=3, btype='lowpass', analog=False, output='sos', fs=sample_freq)
+    sos = signal.butter(N=2, Wn=2, btype='lowpass', analog=False, output='sos', fs=sample_freq)
     prepro_acc = signal.sosfiltfilt(sos, acc_data, axis=0)
 
     return prepro_acc
@@ -53,3 +59,12 @@ def normalize_data(data):
     '''
     return (data - np.min(data)) / (np.max(data) - np.min(data))
 
+
+def remove_time_dim(data, sample_freq):
+    '''
+
+    :param data:
+    :param sample_freq:
+    :return:
+    '''
+    return data[:,1:]
