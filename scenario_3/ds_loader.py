@@ -14,11 +14,8 @@ from datetime import datetime
 
 class Dataset_Handler:
 
-
-    sleepStaging_csv = "SleepStaging.csv"
-    patient_names = ["patient 29, male, 7 years 10 month", "patient 75, female, 5 years", "patient 80, female, 5 years", "patient 89, female 6 years", "patient 91, female, 7 years" ]
     modality1 = ["O1M2", "O2M1", "C4M1", "C3M2", "F4M1", "F3M2"]
-    modality2 = ["LEOGM2Z", "REOGM1"]
+    modality2 = ["LEOGM2", "REOGM1"]
     modality3 = ["EMG"]
     modality4 = ["BeinLi", "BeinRe"]
 
@@ -30,11 +27,14 @@ class Dataset_Handler:
         'REM' : 4
     }
 
-    def __init__(self, dataset_folder):
+    def __init__(self, dataset_folder, target_hertz):
         self.dataset_dir = join(Path('./dataset'), dataset_folder)
+        self.patient_names = listdir(self.dataset_dir)
         # Uses the first entry of patient (name) folder to get the .csv filenames
         # These .csv file names will be the same for every other patient 
         self.sensor_files = listdir(join(self.dataset_dir, self.patient_names[0] ))
+        self.hertz = target_hertz
+        self.samples_per_30sec = target_hertz * 30
     
 
     def channel_csv_to_array(self, file_path):
@@ -46,7 +46,7 @@ class Dataset_Handler:
             The path to a sensor csv file
         """
         df = pd.read_csv(file_path, skiprows=1, names=['value'])
-        arr = df.to_numpy()
+        arr = df.to_numpy().flatten()
 
         # Get first row, as it contains the start and end of sleep
         first_row = pd.read_csv(file_path, nrows=1, names=['start', 'end']).values.tolist()[0]
@@ -59,13 +59,22 @@ class Dataset_Handler:
         # return sensor raw sensor data and time elapsed
         return arr, tdelta.seconds
 
+    def get_labels(self, patient, target_amount):
+        df_labels = pd.read_csv(join(self.dataset_dir, patient, "SleepStaging.csv"))
+        # Get column 'Schlafstadium' as a list 
+        sleep_stage_list = df_labels["Schlafstadium"].tolist()
+        # Convert description to index
+        sleep_stage_list = [self.label_dict[stage] for stage in sleep_stage_list]
+        # Trim list to same length as modality data
+        sleep_stage_list = sleep_stage_list[:target_amount]
+        return np.array(sleep_stage_list)
+
 
     def get_modality_data(self, modality):
         
         # Dictionary containing the patients name and data corresponding to the given modality
         dict_modality = {}
         for patient in self.patient_names:
-
             all_channels = []
             for channel in modality:
                 channel_csv = list(filter(lambda x: channel in x, self.sensor_files))[0]
@@ -75,18 +84,29 @@ class Dataset_Handler:
 
                 channel_freq = int(len(channel_data) / seconds)
                 # Up-/Down-Sampling factor
-                mult_factor = 50 / channel_freq
+                mult_factor = self.hertz / channel_freq
 
-                # TODO: ZOOM check ich nicht....
                 # Up-/Down-Sample
-                resized_data = zoom(channel_data, mult_factor)
-                # TODO: Really concatenate all channels of one modality?
-                all_channels.extend(resized_data)
+                resized_data = zoom(channel_data, zoom=mult_factor, order=0)
 
-            # TODO: Where to get and save labels?
-            dict_modality[patient] = all_channels
+                amount_time_windows = int(len(resized_data)/self.samples_per_30sec)
+                # Split into time windows
+                resized_data = np.array_split(resized_data, amount_time_windows)
 
+                # Append data to all channels of modality
+                all_channels.append(resized_data)
+            
+            # convert to a numpy array
+            all_channels = np.array(all_channels)
+
+            # TODO: Where to save/integrate labels
+            labels = self.get_labels(patient, all_channels.shape[1])
+
+            # TODO: How to concatenate the patients and labels instead of dictionary
+            dict_modality[patient] = (all_channels, labels)
+        
         return dict_modality
+
     
 
     def get_dataset(self):
@@ -169,7 +189,7 @@ if __name__=="__main__":
 
     # initialise Dataset_Handler to build Dataset and Dataloader
     # dsh = Dataset_Handler(dataset_folder='sleep_data_downsampling_AllSensorChannels_ lowfrequency_10HZ')
-    dsh = Dataset_Handler(dataset_folder='sleep_lab_data')
+    dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
 
     dsh.get_dataset()
     # print(dsh.sensor_files)
