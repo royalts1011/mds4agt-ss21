@@ -1,30 +1,27 @@
 import numpy as np
 from scipy.ndimage import zoom
-from ds import Activity_Dataset
 import os
 from torch.utils.data import Dataset, DataLoader
-
-######### from scenario_2
 from os.path import join
 from os import listdir
 from pathlib import Path
 import pandas as pd
 from datetime import datetime
+from ds import Sleep_Stage_Dataset
 
 
 class Dataset_Handler:
-
     modality1 = ["O1M2", "O2M1", "C4M1", "C3M2", "F4M1", "F3M2"]
     modality2 = ["LEOGM2", "REOGM1"]
     modality3 = ["EMG"]
     modality4 = ["BeinLi", "BeinRe"]
 
     label_dict = {
-        'WK' : 0,
-        'N1' : 1,
-        'N2' : 2,
-        'N3' : 3,
-        'REM' : 4
+        'WK': 0,
+        'N1': 1,
+        'N2': 2,
+        'N3': 3,
+        'REM': 4
     }
 
     def __init__(self, dataset_folder, target_hertz):
@@ -32,10 +29,9 @@ class Dataset_Handler:
         self.patient_names = listdir(self.dataset_dir)
         # Uses the first entry of patient (name) folder to get the .csv filenames
         # These .csv file names will be the same for every other patient 
-        self.sensor_files = listdir(join(self.dataset_dir, self.patient_names[0] ))
+        self.sensor_files = listdir(join(self.dataset_dir, self.patient_names[0]))
         self.hertz = target_hertz
         self.samples_per_30sec = target_hertz * 30
-    
 
     def channel_csv_to_array(self, file_path):
         """
@@ -69,7 +65,6 @@ class Dataset_Handler:
         sleep_stage_list = sleep_stage_list[:target_amount]
         return np.array(sleep_stage_list)
 
-
     def get_modality_data(self, modality):
         # Dictionary containing the patients name and data corresponding to the given modality
         dict_modality = {}
@@ -82,7 +77,7 @@ class Dataset_Handler:
                 channel_data, seconds = self.channel_csv_to_array(channel_path)
 
                 channel_freq = int(len(channel_data) / seconds)
-                
+
                 # Up-/Down-Sampling factor
                 mult_factor = self.hertz / channel_freq
 
@@ -90,15 +85,15 @@ class Dataset_Handler:
                 resized_data = zoom(channel_data, zoom=mult_factor, order=0)
 
                 # Cut last values if total samples if not multiple from samples_per_frame
-                smooth_factor = self.samples_per_30sec * int(len(resized_data)/self.samples_per_30sec)
+                smooth_factor = self.samples_per_30sec * int(len(resized_data) / self.samples_per_30sec)
                 resized_data = resized_data[:smooth_factor]
 
-                amount_time_windows = int(len(resized_data)/self.samples_per_30sec)
+                amount_time_windows = int(len(resized_data) / self.samples_per_30sec)
                 # Split into time windows
                 resized_data = np.array_split(resized_data, amount_time_windows)
                 # Append data to all channels of modality
                 all_channels.append(resized_data)
-            
+
             # convert to a numpy array
             all_channels = np.array(all_channels)
 
@@ -107,14 +102,12 @@ class Dataset_Handler:
 
             # TODO: How to concatenate the patients and labels instead of dictionary
             dict_modality[patient] = (all_channels, labels)
-        
+
             # concat_modality = np.concatenate(all_channels, axis=1, out=None)
 
         return dict_modality
 
-    
-
-    def get_dataset(self):
+    def generate_dataset(self):
         """
             Invoke CSV-readings and concatenate for baseline model.
         
@@ -125,15 +118,13 @@ class Dataset_Handler:
         dict_modality3 = self.get_modality_data(self.modality3)
         dict_modality4 = self.get_modality_data(self.modality4)
 
-
-        
-        labels_1 = [y for (_,y) in dict_modality1.values()]
+        labels_1 = [y for (_, y) in dict_modality1.values()]
         concat_labels = np.concatenate((labels_1), axis=0, out=None)
 
-        all_1 = [x for (x,_) in dict_modality1.values()]
-        all_2 = [x for (x,_) in dict_modality2.values()]
-        all_3 = [x for (x,_) in dict_modality3.values()]
-        all_4 = [x for (x,_) in dict_modality4.values()]
+        all_1 = [x for (x, _) in dict_modality1.values()]
+        all_2 = [x for (x, _) in dict_modality2.values()]
+        all_3 = [x for (x, _) in dict_modality3.values()]
+        all_4 = [x for (x, _) in dict_modality4.values()]
 
         # Concatenate in frame axis
         concat_channel_modality1 = np.concatenate((all_1), axis=1, out=None)
@@ -142,27 +133,27 @@ class Dataset_Handler:
         concat_channel_modality4 = np.concatenate((all_4), axis=1, out=None)
 
         concat_baseline = np.concatenate(
-                                (concat_channel_modality1,
-                                 concat_channel_modality2,
-                                 concat_channel_modality3,
-                                 concat_channel_modality4), axis=0, out=None)
+            (concat_channel_modality1,
+             concat_channel_modality2,
+             concat_channel_modality3,
+             concat_channel_modality4), axis=0, out=None)
 
         # Saving directory
         save_dir = join(Path('./dataset'), str(self.hertz))
         os.makedirs(save_dir, exist_ok=True)
-        
-        np.save(join(save_dir, "labels.npy"),concat_labels)
 
-        np.save(join(save_dir, "modality1.npy"),concat_channel_modality1)
-        np.save(join(save_dir, "modality2.npy"),concat_channel_modality2)
-        np.save(join(save_dir, "modality3.npy"),concat_channel_modality3)
-        np.save(join(save_dir, "modality4.npy"),concat_channel_modality4)
+        np.save(join(save_dir, "labels.npy"), concat_labels)
 
-        np.save(join(save_dir, "baseline.npy"),concat_baseline)
+        np.save(join(save_dir, "modality1.npy"), concat_channel_modality1)
+        np.save(join(save_dir, "modality2.npy"), concat_channel_modality2)
+        np.save(join(save_dir, "modality3.npy"), concat_channel_modality3)
+        np.save(join(save_dir, "modality4.npy"), concat_channel_modality4)
+
+        np.save(join(save_dir, "baseline.npy"), concat_baseline)
 
         return True
 
-    def get_dataloader(self, is_train=True, batch_size=32, num_workers=0):
+    def get_dataloader(self, herz=50, modality="baseline.npy", batch_size=32, num_workers=0):
         """
         Function to create dataset and dataloaders from labels and stacked data (all sensors combined)
         Parameters
@@ -177,17 +168,16 @@ class Dataset_Handler:
         ----------
         ds_loader : DataLoader
             All combined sensory data in the dataloader
+            :param load_dir:
         """
-        # Adapt variables to test/training scenario
-        files, folder = self.get_folder_and_files(is_train)
+        load_dir = join(Path('./dataset'), str(herz))
 
-        for data in files:
-            if data.endswith("Labels.npy"):
-                labels = np.load(os.path.join(folder,data), allow_pickle=True)
-            if data.endswith("stacked_data.npy"):
-                stacked_data = np.load(os.path.join(folder,data), allow_pickle=True)
-        dataset = Activity_Dataset(stacked_data,labels)
-        
+        labels = np.load(os.path.join(load_dir, "labels.npy"), allow_pickle=True)
+        data = np.load(os.path.join(load_dir, modality), allow_pickle=True)
+
+        data = data.transpose(1, 2, 0)
+        dataset = Sleep_Stage_Dataset(data, labels)
+
         ds_loader = DataLoader(
             dataset,
             batch_size=batch_size,
@@ -196,12 +186,13 @@ class Dataset_Handler:
         )
         return ds_loader
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     from ds_loader import Dataset_Handler
 
     # initialise Dataset_Handler to build Dataset and Dataloader
     # dsh = Dataset_Handler(dataset_folder='sleep_data_downsampling_AllSensorChannels_ lowfrequency_10HZ', target_hertz=10)
-    dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
+    # dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
 
-    dsh.get_dataset()
+    # dsh.get_dataset()
     # print(dsh.sensor_files)
