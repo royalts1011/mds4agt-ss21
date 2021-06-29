@@ -176,19 +176,38 @@ class Dataset_Handler:
         data = np.load(os.path.join(load_dir, modality), allow_pickle=True)
 
         data = data.transpose(1, 2, 0)
-        dataset = Sleep_Stage_Dataset(data, labels)
 
-        ds_loader = DataLoader(
-            dataset,
+        N = len(data)
+        n_70 = int(round(.7*N))
+
+        data_train = data[:n_70]
+        data_test = data[n_70:]
+        label_train = labels[:n_70]
+        label_test = labels[n_70:]
+        dataset_train = Sleep_Stage_Dataset(data_train, label_train)
+        dataset_test = Sleep_Stage_Dataset(data_test, label_test)
+
+        train_dl = DataLoader(
+            dataset_train,
             batch_size=batch_size,
             shuffle=True,
             num_workers=num_workers
         )
-        return ds_loader
+
+        test_dl = DataLoader(
+            dataset_test,
+            batch_size=batch_size,
+            shuffle=True,
+            num_workers=num_workers
+        )
+
+        return train_dl, test_dl
 
 
 if __name__ == "__main__":
-    from ds_loader import Dataset_Handler
+    # from ds_loader import Dataset_Handler
+    # dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
+    # dsh.get_dataloader()
 
     # initialise Dataset_Handler to build Dataset and Dataloader
     # dsh = Dataset_Handler(dataset_folder='sleep_data_downsampling_AllSensorChannels_ lowfrequency_10HZ', target_hertz=10)
