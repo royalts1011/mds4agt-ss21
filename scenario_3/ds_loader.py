@@ -204,7 +204,7 @@ class Dataset_Handler:
         return train_dl, test_dl
 
 
-if __name__ == "__main__":
+# if __name__ == "__main__":
     # from ds_loader import Dataset_Handler
     # dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
     # dsh.get_dataloader()
