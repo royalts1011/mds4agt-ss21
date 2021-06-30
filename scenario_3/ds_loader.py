@@ -23,6 +23,13 @@ class Dataset_Handler:
         'N3': 3,
         'REM': 4
     }
+    inverse_label_dict = {
+        0 : 'WK',
+        1 : 'N1',
+        2 : 'N2',
+        3 : 'N3',
+        4 : 'REM'
+    }
 
     def __init__(self, dataset_folder, target_hertz):
         self.dataset_dir = join(Path('./dataset'), dataset_folder)
@@ -175,6 +182,11 @@ class Dataset_Handler:
         labels = np.load(os.path.join(load_dir, "labels.npy"), allow_pickle=True)
         data = np.load(os.path.join(load_dir, modality), allow_pickle=True)
 
+        self.print_stage_frequencies(labels)
+        data, labels = self.upsample_N1(data, labels, 4)
+        # Frequency after upsampling
+        self.print_stage_frequencies(labels)
+
         data = data.transpose(1, 2, 0)
 
         N = len(data)
@@ -202,16 +214,104 @@ class Dataset_Handler:
         )
 
         return train_dl, test_dl
+    
+
+    
+    def upsample_N1(self, data, labels, factor=4):
+        """This function upsamples the N1 stage in the data.
+            (Independent sleep_stage upsampling could be implemented by gicing a sleep_stage parameter)
+
+        Args:
+            data : Multidimensional modality data
+            labels : Corresponding labels
+            factor (int, optional): Multiplication to reach same amount of frequency. Defaults to 4.
+
+        Returns:
+            new data with additional N1 stages and new labels. Noise is applied to additional N1 stages.
+        """        
+        target_label = self.label_dict['N1']
+        new_data = []
+        # Go through every channel of the modality
+        for j in range(data.shape[0]):
+            channel_n1s = []
+            # Go through all data frames = amount of sleep stage labels
+            for i in range(data.shape[1]):
+                if labels[i] == target_label:
+                    # Append N1 frame (factor-1) times
+                    # channel_n1s.extend([data[j][i] for x in range(factor-1)])
+                    channel_n1s.extend([ data[j][i] ] *(factor-1) )
+            
+            # add noise to all additional n1 windows
+            noisy_n1s = self.add_noise(channel_n1s, noise_std=.2)
+
+            # get current loop channel
+            channel = data[j]
+
+            # append/concatenate all noisy N1 frames to channel
+            new_channel = np.concatenate((channel, noisy_n1s))
+
+            # Create and append to the new modality data
+            new_data.append( new_channel )
+        
+        new_data = np.array(new_data)
+
+        # Difference shows added N1 frames
+        added_n1s = new_data.shape[1] - data.shape[1]
+        # Add as many N1 labels to the end as frames were added
+        new_labels = np.append(labels, [self.label_dict['N1'] for x in range(added_n1s)])
+
+        return new_data, new_labels
+
+    def add_noise(self, frame_list, noise_std):
+        """Adds noise to each frame in a list of frames
+
+        Args:
+            frame_list : List of 'pure' frames (list of arrays)
+            noise_std ([float]): The standard deviation for noise generation.
+                                    0.2 or 0.4 recommended
+
+        Returns:
+            Numpy array of frames with noise applied to them
+        """        
+        noisy_list = []
+        for frame in frame_list:
+            # Create new noise in each iteration
+            noise = np.random.normal(0, noise_std, frame.shape)
+
+            new_frame = frame + noise
+            noisy_list.append( new_frame )
+
+        return np.array(noisy_list)
+
+    def print_stage_frequencies(self, labels):
+        """Prints the dictionary containing the frequency of a stage
+
+        Args:
+            labels ([list of int]): A list of labels ranging from 0 to 4.
+        """        
+        dict_stage_frequency = {
+            'WK': 0,
+            'N1': 0,
+            'N2': 0,
+            'N3': 0,
+            'REM': 0
+        }
+
+        for item in labels:
+            dict_stage_frequency[ self.inverse_label_dict[item] ] += 1
+
+        print(dict_stage_frequency)
 
 
-# if __name__ == "__main__":
-    # from ds_loader import Dataset_Handler
-    # dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
-    # dsh.get_dataloader()
+
+if __name__ == "__main__":
+    from ds_loader import Dataset_Handler
+    dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
+    dsh.get_dataloader()
 
     # initialise Dataset_Handler to build Dataset and Dataloader
-    # dsh = Dataset_Handler(dataset_folder='sleep_data_downsampling_AllSensorChannels_ lowfrequency_10HZ', target_hertz=10)
-    # dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
+    dsh = Dataset_Handler(dataset_folder='sleep_data_downsampling_AllSensorChannels_ lowfrequency_10HZ', target_hertz=10)
+    dsh = Dataset_Handler(dataset_folder='sleep_lab_data', target_hertz=50)
 
     # dsh.get_dataset()
     # print(dsh.sensor_files)
