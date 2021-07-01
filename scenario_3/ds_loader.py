@@ -160,7 +160,7 @@ class Dataset_Handler:
 
         return True
 
-    def get_dataloader(self, herz=50, modality="baseline.npy", batch_size=32, num_workers=0):
+    def get_dataloader(self, hertz=50, modality="baseline.npy", batch_size=32, num_workers=0):
         """
         Function to create dataset and dataloaders from labels and stacked data (all sensors combined)
         Parameters
@@ -177,7 +177,7 @@ class Dataset_Handler:
             All combined sensory data in the dataloader
             :param load_dir:
         """
-        load_dir = join(Path('./dataset'), str(herz))
+        load_dir = join(Path('./dataset'), str(hertz))
 
         labels = np.load(os.path.join(load_dir, "labels.npy"), allow_pickle=True)
         data = np.load(os.path.join(load_dir, modality), allow_pickle=True)
