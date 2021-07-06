@@ -46,6 +46,9 @@ class SimpleNet(nn.Module):
         # self.linear = nn.Linear(256 * 1 * 29, 5) # bei kernel size (1,20)
         # self.linear = nn.Linear(256 * 1 * 10, 5) # bei kernel size (1,40)
 
+
+        # self.linear = nn.Linear(256 * 1 * 6, 5) # bei 10Hz kernel size (1,5)
+
     def forward(self, x):
         """
         defines the path of data through the net

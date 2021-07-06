@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 from datetime import datetime
 from ds import Sleep_Stage_Dataset
-import preprocessing as pp
+import augmentation as aug
 
 
 class Dataset_Handler:
@@ -184,8 +184,8 @@ class Dataset_Handler:
         data = np.load(os.path.join(load_dir, modality), allow_pickle=True)
 
         self.print_stage_frequencies(labels)
-        data, labels = pp.upsample_N1(data, labels, self.label_dict, 4)
-        data = pp.augment(data)
+        data, labels = aug.upsample_N1(data, labels, self.label_dict, 4)
+        data = aug.augment(data)
         # Frequency after upsampling
         self.print_stage_frequencies(labels)
 
