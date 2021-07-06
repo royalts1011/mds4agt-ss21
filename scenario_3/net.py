@@ -11,7 +11,7 @@ padding = 0
 class SimpleNet(nn.Module):
     """
     Defintion of a CNN with 7 convolutional layers followed by one Fully Connected Layer
-    to map the activations from the 7th Conv-Layer to the 55 classes.
+    to map the activations from the 7th Conv-Layer to the 4 classes.
     """
 
     def __init__(self, input_channels):
