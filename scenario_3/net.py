@@ -14,11 +14,11 @@ class SimpleNet(nn.Module):
     to map the activations from the 7th Conv-Layer to the 55 classes.
     """
 
-    def __init__(self):
+    def __init__(self, input_channels):
         super().__init__()
 
         self.convblock1 = nn.Sequential(
-            nn.Conv2d(11, 16, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
+            nn.Conv2d(input_channels, 16, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             nn.ReLU()
         )
 
@@ -63,6 +63,6 @@ class SimpleNet(nn.Module):
         # print("view: ", x.view(x.size(0), -1).shape)
         # print("After view Shape: ", x.shape)
 
-        x = self.linear(x.view(x.size(0), -1))
+        x = self.linear(x.reshape(x.size(0), -1))
 
         return x
