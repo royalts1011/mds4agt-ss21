@@ -185,6 +185,7 @@ class Dataset_Handler:
 
         self.print_stage_frequencies(labels)
         data, labels = pp.upsample_N1(data, labels, self.label_dict, 4)
+        data = pp.augment(data)
         # Frequency after upsampling
         self.print_stage_frequencies(labels)
 

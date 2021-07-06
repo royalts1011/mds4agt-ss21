@@ -24,15 +24,12 @@ def upsample_N1(data, labels, label_dict, factor=4):
                 # Append N1 frame (factor-1) times
                 # channel_n1s.extend([data[j][i] for x in range(factor-1)])
                 channel_n1s.extend([ data[j][i] ] *(factor-1) )
-        
-        # add noise to all additional n1 windows
-        noisy_n1s = add_noise(channel_n1s, noise_std=.2)
 
         # get current loop channel
         channel = data[j]
 
         # append/concatenate all noisy N1 frames to channel
-        new_channel = np.concatenate((channel, noisy_n1s))
+        new_channel = np.concatenate((channel, channel_n1s))
 
         # Create and append to the new modality data
         new_data.append( new_channel )
@@ -45,6 +42,29 @@ def upsample_N1(data, labels, label_dict, factor=4):
     new_labels = np.append(labels, [label_dict['N1'] for x in range(added_n1s)])
 
     return new_data, new_labels
+
+def augment(data):
+    """Augmentation of the whole data. Augmentation will be applied per frame and per modality.
+
+    Args:
+        data : Multidimensional modality data
+
+    Returns:
+        data :  Multidimensional, augmented modality data
+    """
+
+    # Noise augmentation
+    new_data = []
+    for j in range(data.shape[0]):
+        # j = sensor channel
+        current_channel = data[j]
+        # Go through all data frames
+        augmented_channel = add_noise(current_channel, noise_std=.2)
+        new_data.append(augmented_channel)
+    
+    new_data = np.array(new_data)
+    return new_data
+
 
 def add_noise(frame_list, noise_std):
     """Adds noise to each frame in a list of frames

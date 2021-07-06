@@ -43,6 +43,7 @@ class SimpleNet(nn.Module):
         )
 
         self.linear = nn.Linear(256 * 1 * 43, 5) # bei kernel size (1,5)
+        # self.linear = nn.Linear(256 * 1 * 29, 5) # bei kernel size (1,20)
         # self.linear = nn.Linear(256 * 1 * 10, 5) # bei kernel size (1,40)
 
     def forward(self, x):
