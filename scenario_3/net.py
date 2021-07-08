@@ -3,7 +3,7 @@ from torch import nn
 import torch.nn.functional as f
 
 ### Variables ###
-kern_sz = (1, 20)
+kern_sz = (1, 5)
 stride = (1, 2)
 padding = 0
 
@@ -14,11 +14,11 @@ class SimpleNet(nn.Module):
     to map the activations from the 7th Conv-Layer to the 4 classes.
     """
 
-    def __init__(self):
+    def __init__(self, input_channels):
         super().__init__()
 
         self.convblock1 = nn.Sequential(
-            nn.Conv2d(11, 16, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
+            nn.Conv2d(input_channels, 16, kernel_size=kern_sz, stride=stride, padding=padding, bias=True),
             nn.ReLU()
         )
 
@@ -42,9 +42,12 @@ class SimpleNet(nn.Module):
             nn.ReLU()
         )
 
-        # self.linear = nn.Linear(256 * 1 * 43, 5) # bei kernel size (1,5)
-        self.linear = nn.Linear(256 * 1 * 29, 5) # bei kernel size (1,20)
+        self.linear = nn.Linear(256 * 1 * 43, 5) # bei kernel size (1,5)
+        # self.linear = nn.Linear(256 * 1 * 29, 5) # bei kernel size (1,20)
         # self.linear = nn.Linear(256 * 1 * 10, 5) # bei kernel size (1,40)
+
+
+        # self.linear = nn.Linear(256 * 1 * 6, 5) # bei 10Hz kernel size (1,5)
 
     def forward(self, x):
         """
