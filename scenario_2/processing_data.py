@@ -23,7 +23,7 @@ def acc_lowpass_filter(acc_data, sample_freq):
     # btype: which kind of filter
     # N: 2 Lowpass Filter-order --> high order step function, low order more smooth function
     # Wn: ?????
-    sos = signal.butter(N=2, Wn=2, btype='lowpass', analog=False, output='sos', fs=sample_freq)
+    sos = signal.butter(N=2, Wn=1, btype='lowpass', analog=False, output='sos', fs=sample_freq)
     prepro_acc = signal.sosfiltfilt(sos, acc_data, axis=0)
 
     return prepro_acc
